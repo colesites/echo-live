@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 
+import PublicShareActions from "@/components/public/PublicShareActions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,6 +11,7 @@ import {
   STREAM_STATUS_LABELS,
   STREAM_TYPE_LABELS,
 } from "@/constants/stream.constants";
+import { useAbsoluteUrl } from "@/hooks/useAbsoluteUrl";
 import type { Stream } from "@/types/stream.types";
 import { formatShortDateTime } from "@/utils/format.utils";
 
@@ -20,6 +24,7 @@ export default function StreamCard({ stream }: StreamCardProps) {
     stream.type === STREAM_MODE.AUDIO
       ? `/a/${stream.publicId}`
       : `/v/${stream.publicId}`;
+  const shareLink = useAbsoluteUrl(publicHref);
   const scheduleLabel = formatShortDateTime(
     stream.scheduledFor ?? stream.createdAt,
   );
@@ -43,16 +48,14 @@ export default function StreamCard({ stream }: StreamCardProps) {
             </p>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button asChild variant="default">
             <Link href={`/studio/${stream.id}`}>Open Studio</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href={publicHref}>Public Link</Link>
           </Button>
           <Button asChild variant="ghost">
             <Link href={`/settings?streamId=${stream.id}`}>Destinations</Link>
           </Button>
+          <PublicShareActions shareLink={shareLink} />
         </div>
       </CardContent>
     </Card>

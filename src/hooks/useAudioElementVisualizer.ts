@@ -16,12 +16,10 @@ const DEFAULT_LEVELS = Array.from({ length: AUDIO_WAVEFORM_BARS }, () => 0);
 
 type UseAudioElementVisualizerProps = {
   audioRef: RefObject<HTMLAudioElement | null>;
-  isActive: boolean;
 };
 
 export function useAudioElementVisualizer({
   audioRef,
-  isActive,
 }: UseAudioElementVisualizerProps) {
   const [levels, setLevels] = useState<number[]>(DEFAULT_LEVELS);
   const contextRef = useRef<AudioContext | null>(null);
@@ -31,7 +29,7 @@ export function useAudioElementVisualizer({
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio || !isActive) {
+    if (!audio) {
       setLevels(DEFAULT_LEVELS);
       return;
     }
@@ -55,6 +53,8 @@ export function useAudioElementVisualizer({
       sourceRef.current = source;
     };
 
+    ensureNodes();
+
     const data = new Uint8Array(
       Math.max(AUDIO_VISUALIZER_SAMPLE_COUNT, AUDIO_ANALYSER_FFT_SIZE),
     );
@@ -70,7 +70,6 @@ export function useAudioElementVisualizer({
     };
 
     const handlePlay = async () => {
-      ensureNodes();
       await contextRef.current?.resume();
       if (!rafRef.current) {
         rafRef.current = requestAnimationFrame(loop);
@@ -83,6 +82,7 @@ export function useAudioElementVisualizer({
         rafRef.current = null;
       }
       setLevels(DEFAULT_LEVELS);
+      void contextRef.current?.suspend();
     };
 
     audio.addEventListener("play", handlePlay);
@@ -109,7 +109,7 @@ export function useAudioElementVisualizer({
       analyserRef.current = null;
       contextRef.current = null;
     };
-  }, [audioRef, isActive]);
+  }, [audioRef]);
 
   return levels;
 }

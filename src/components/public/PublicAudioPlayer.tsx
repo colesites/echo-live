@@ -1,17 +1,19 @@
 "use client";
 
-import { Headphones, Pause, Play, Users } from "lucide-react";
+import { Headphones, Users } from "lucide-react";
 import { useMemo, useRef } from "react";
 
-import WaveformBars from "@/components/audio-studio/WaveformBars";
+import PublicAudioControls from "@/components/public/PublicAudioControls";
 import PublicShareActions from "@/components/public/PublicShareActions";
 import PublicStreamHeader from "@/components/public/PublicStreamHeader";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { STREAM_STATUS } from "@/constants/stream.constants";
 import { useAudioElementVisualizer } from "@/hooks/useAudioElementVisualizer";
 import { useAudioPlayback } from "@/hooks/useAudioPlayback";
+import { useAudioProgress } from "@/hooks/useAudioProgress";
+import { useAudioScrubber } from "@/hooks/useAudioScrubber";
+import { useAudioSeekable } from "@/hooks/useAudioSeekable";
 import { useHls } from "@/hooks/useHls";
 import { usePlaybackTracker } from "@/hooks/usePlaybackTracker";
 import { usePublicStream } from "@/hooks/usePublicStream";
@@ -35,10 +37,18 @@ export default function PublicAudioPlayer({
   const playback = usePlaybackTracker(tracker.trackView);
   const canPlay = Boolean(streamState.data?.audioUrl);
   const audioPlayback = useAudioPlayback({ audioRef, canPlay });
-  const levels = useAudioElementVisualizer({
+  const progress = useAudioProgress(audioRef);
+  const seekable = useAudioSeekable(audioRef);
+  const isLive = streamState.data?.status === STREAM_STATUS.LIVE;
+  const scrubber = useAudioScrubber({
     audioRef,
-    isActive: canPlay && audioPlayback.isPlaying,
+    currentTime: progress.currentTime,
+    seekMin: seekable.min,
+    seekMax: seekable.max,
+    canSeek: seekable.canSeek,
+    isLive,
   });
+  const levels = useAudioElementVisualizer({ audioRef });
   useHls({ mediaRef: audioRef, src: streamState.data?.audioUrl });
 
   const shareLink = useMemo(() => `${SHARE_PREFIX}${publicId}`, [publicId]);
@@ -66,7 +76,7 @@ export default function PublicAudioPlayer({
       : "bg-muted text-muted-foreground";
   const listenerCount =
     statsState.data?.totalListeners ?? statsState.data?.totalViewers ?? 0;
-  const averageWatchLabel = statsState.data
+  const averageWatchText = statsState.data
     ? formatDurationSeconds(statsState.data.averageWatchDuration)
     : "--";
 
@@ -89,31 +99,24 @@ export default function PublicAudioPlayer({
                 <Users className="size-4 text-primary" />
                 {listenerCount.toLocaleString()} listening
               </span>
-              <span>{averageWatchLabel}</span>
+              <span>{averageWatchText}</span>
             </div>
-            <div className="relative flex min-h-[220px] items-center justify-center rounded-3xl border border-dashed border-border/60 bg-background/60">
-              <WaveformBars
-                levels={levels}
-                className="pointer-events-none absolute inset-6"
-              />
-              <Button
-                size="icon-lg"
-                variant="secondary"
-                onClick={audioPlayback.toggle}
-                disabled={!canPlay}
-                className="relative"
-              >
-                {audioPlayback.isPlaying ? <Pause /> : <Play />}
-              </Button>
-            </div>
-            {!canPlay ? (
-              <p className="text-sm text-muted-foreground">
-                The audio feed is not available yet. Please check back soon.
-              </p>
-            ) : null}
-            {audioPlayback.error ? (
-              <p className="text-sm text-destructive">{audioPlayback.error}</p>
-            ) : null}
+            <PublicAudioControls
+              canPlay={canPlay}
+              isPlaying={audioPlayback.isPlaying}
+              isLive={isLive}
+              waveformLevels={levels}
+              currentTime={progress.currentTime}
+              duration={progress.duration}
+              seekMin={scrubber.min}
+              seekMax={scrubber.max}
+              seekValue={scrubber.value}
+              error={audioPlayback.error}
+              onToggle={audioPlayback.toggle}
+              onSeek={scrubber.onScrub}
+              onSeekStart={scrubber.onScrubStart}
+              onSeekEnd={scrubber.onScrubEnd}
+            />
             <PublicShareActions shareLink={shareLink} error={tracker.error} />
             {/* biome-ignore lint/a11y/useMediaCaption: Captions are provided by the streaming provider when available. */}
             <audio

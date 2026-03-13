@@ -114,7 +114,7 @@ export function buildAudioEgressOutput(config: S3Config, publicId: string) {
     filenamePrefix: prefix,
     playlistName: playlistPath,
     livePlaylistName: livePlaylistPath,
-    segmentDuration: 2,
+    segmentDuration: 1,
     output: {
       case: "s3",
       value: s3Output,

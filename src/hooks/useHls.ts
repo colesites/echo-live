@@ -32,11 +32,11 @@ export function useHls({ mediaRef, src }: UseHlsProps) {
 
     const hls = new Hls({
       lowLatencyMode: true,
-      liveSyncDuration: 3,
-      liveMaxLatencyDuration: 10,
-      maxBufferLength: 10,
-      maxMaxBufferLength: 20,
-      backBufferLength: 0,
+      liveSyncDurationCount: 1,
+      liveMaxLatencyDurationCount: 2,
+      maxBufferLength: 2,
+      maxMaxBufferLength: 3,
+      backBufferLength: 120,
     });
     hls.loadSource(src);
     hls.attachMedia(media);

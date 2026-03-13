@@ -46,3 +46,5 @@ export const MICROPHONE_ENUMERATION_ERROR_MESSAGE =
   "Unable to load microphones.";
 export const MICROPHONE_ACCESS_ERROR_MESSAGE =
   "Unable to access the microphone.";
+
+export const LIVE_AUDIO_SEEK_FALLBACK_WINDOW_SECONDS = 60;
