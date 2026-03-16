@@ -17,9 +17,15 @@ export type RecordingListItem = {
 
 export type RecordingListProps = {
   items: RecordingListItem[];
+  isDeleting?: boolean;
+  onDelete?: (recordingId: string) => void;
 };
 
-export default function RecordingList({ items }: RecordingListProps) {
+export default function RecordingList({
+  items,
+  isDeleting = false,
+  onDelete,
+}: RecordingListProps) {
   return (
     <Card className="border-border/60 bg-background/80 backdrop-blur">
       <CardHeader>
@@ -63,6 +69,14 @@ export default function RecordingList({ items }: RecordingListProps) {
                     </Link>
                   </Button>
                 ) : null}
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => onDelete?.(recording.id)}
+                  disabled={isDeleting}
+                >
+                  Delete
+                </Button>
               </div>
             </div>
           ))

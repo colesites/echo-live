@@ -20,11 +20,12 @@ export function usePublicStream(publicId: string) {
       status: data.stream.status,
       hlsUrl: data.stream.hlsUrl ?? null,
       audioUrl: data.stream.audioUrl ?? null,
+      imageUrl: data.stream.imageUrl ?? null,
       createdAt: data.stream.createdAt,
       scheduledFor: data.stream.scheduledFor ?? null,
       liveStartedAt: data.stream.liveStartedAt ?? null,
-      churchName: data.owner?.churchName ?? null,
-      churchLogo: data.owner?.logo ?? null,
+      orgName: data.org?.name ?? null,
+      orgImageUrl: data.org?.imageUrl ?? null,
     });
     return result.success ? result.data : null;
   }, [data]);

@@ -1,4 +1,5 @@
 import StudioClient from "@/components/studio/StudioClient";
+import { requireAuth } from "@/utils/require-auth";
 
 type StudioPageProps = {
   params: Promise<{ streamId: string }>;
@@ -6,6 +7,7 @@ type StudioPageProps = {
 
 export default async function StudioPage({ params }: StudioPageProps) {
   const { streamId } = await params;
+  await requireAuth();
 
   return (
     <div className="flex flex-col gap-6">

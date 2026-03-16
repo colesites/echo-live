@@ -1,8 +1,6 @@
 "use client";
 
 import { Pause, Play } from "lucide-react";
-
-import WaveformBars from "@/components/audio-studio/WaveformBars";
 import { Button } from "@/components/ui/button";
 import { formatDurationSeconds } from "@/utils/format.utils";
 
@@ -10,7 +8,6 @@ type PublicAudioControlsProps = {
   canPlay: boolean;
   isPlaying: boolean;
   isLive: boolean;
-  waveformLevels: number[];
   currentTime: number;
   duration: number;
   seekMin: number;
@@ -27,7 +24,6 @@ export default function PublicAudioControls({
   canPlay,
   isPlaying,
   isLive,
-  waveformLevels,
   currentTime,
   duration,
   seekMin,
@@ -44,31 +40,6 @@ export default function PublicAudioControls({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="relative flex min-h-[220px] items-center justify-center rounded-3xl border border-dashed border-border/60 bg-background/60">
-        <WaveformBars
-          levels={waveformLevels}
-          className="pointer-events-none absolute inset-6"
-        />
-        <Button
-          size="icon-lg"
-          variant="secondary"
-          onClick={onToggle}
-          disabled={!canPlay}
-          className="relative"
-        >
-          {isPlaying ? <Pause /> : <Play />}
-        </Button>
-      </div>
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span>{leftLabel}</span>
-        <span
-          className={
-            isLive ? "text-emerald-500 font-semibold tracking-wide" : undefined
-          }
-        >
-          {rightLabel}
-        </span>
-      </div>
       <input
         type="range"
         min={seekMin}
@@ -93,6 +64,27 @@ export default function PublicAudioControls({
         disabled={!canPlay}
         className="h-2 w-full cursor-pointer appearance-none rounded-full bg-muted accent-primary disabled:cursor-not-allowed disabled:opacity-60"
       />
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <span>{leftLabel}</span>
+        <span
+          className={
+            isLive ? "text-primary font-semibold tracking-wide" : undefined
+          }
+        >
+          {rightLabel}
+        </span>
+      </div>
+      <div className="flex items-center justify-center">
+        <Button
+          size="icon-lg"
+          variant="secondary"
+          onClick={onToggle}
+          disabled={!canPlay}
+          className="h-14 w-14 rounded-full"
+        >
+          {isPlaying ? <Pause /> : <Play />}
+        </Button>
+      </div>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       {!canPlay ? (
         <p className="text-sm text-muted-foreground">

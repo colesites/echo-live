@@ -1,10 +1,10 @@
 "use client";
 
-import { MessageSquare, Users, Video } from "lucide-react";
+import { MessageSquare, Video } from "lucide-react";
+import Image from "next/image";
 import { useMemo, useRef } from "react";
 
 import PublicShareActions from "@/components/public/PublicShareActions";
-import PublicStreamHeader from "@/components/public/PublicStreamHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { STREAM_STATUS } from "@/constants/stream.constants";
@@ -14,6 +14,7 @@ import { usePublicStream } from "@/hooks/usePublicStream";
 import { usePublicStreamStats } from "@/hooks/usePublicStreamStats";
 import { useTrackPublicView } from "@/hooks/useTrackPublicView";
 import { formatDurationSeconds } from "@/utils/format.utils";
+import { getInitials, isLocalAsset } from "@/utils/string.utils";
 
 const SHARE_PREFIX = "/v/";
 
@@ -54,8 +55,9 @@ export default function PublicVideoPlayer({
   const liveLabel = stream.status === STREAM_STATUS.LIVE ? "Live" : "Offline";
   const statusClassName =
     stream.status === STREAM_STATUS.LIVE
-      ? "bg-emerald-500/20 text-emerald-200"
+      ? "bg-primary/20 text-primary"
       : "bg-muted text-muted-foreground";
+  const initials = getInitials(stream.orgName);
   const viewerCount =
     statsState.data?.totalViewers ?? statsState.data?.totalListeners ?? 0;
   const averageWatchLabel = statsState.data
@@ -63,49 +65,73 @@ export default function PublicVideoPlayer({
     : "--";
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(106,90,205,0.14),_transparent_55%),radial-gradient(circle_at_top_right,_rgba(245,184,65,0.14),_transparent_50%)]">
+    <div className="min-h-screen bg-background">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-10">
-        <PublicStreamHeader
-          title={stream.title}
-          churchName={stream.churchName}
-          churchLogo={stream.churchLogo}
-          statusLabel={liveLabel}
-          statusClassName={statusClassName}
-          icon={Video}
-        />
+        <div className="grid gap-6 lg:grid-cols-[2.2fr_1fr]">
+          <div className="flex flex-col gap-4">
+            <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-black">
+              {canPlay ? (
+                <>
+                  {/* biome-ignore lint/a11y/useMediaCaption: Captions are provided by the streaming provider when available. */}
+                  <video
+                    ref={videoRef}
+                    controls
+                    className="aspect-video w-full"
+                    onPlay={playback.handlePlay}
+                    onPause={playback.handlePause}
+                    onEnded={playback.handlePause}
+                  />
+                </>
+              ) : (
+                <div className="flex aspect-video items-center justify-center text-sm text-muted-foreground">
+                  Stream is not live yet.
+                </div>
+              )}
+              <div
+                className={`absolute left-4 top-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${statusClassName}`}
+              >
+                <Video className="size-3" />
+                {liveLabel}
+              </div>
+            </div>
 
-        <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-          <Card className="border-border/60 bg-background/80 backdrop-blur">
-            <CardContent className="flex flex-col gap-4 px-6 py-6">
-              <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <span className="flex items-center gap-2">
-                  <Users className="size-4 text-primary" />
-                  {viewerCount.toLocaleString()} watching
-                </span>
-                <span>{averageWatchLabel}</span>
-              </div>
-              <div className="overflow-hidden rounded-2xl border border-border/60 bg-black">
-                {canPlay ? (
-                  <>
-                    {/* biome-ignore lint/a11y/useMediaCaption: Captions are provided by the streaming provider when available. */}
-                    <video
-                      ref={videoRef}
-                      controls
-                      className="aspect-video w-full"
-                      onPlay={playback.handlePlay}
-                      onPause={playback.handlePause}
-                      onEnded={playback.handlePause}
-                    />
-                  </>
-                ) : (
-                  <div className="flex aspect-video items-center justify-center text-sm text-muted-foreground">
-                    Stream is not live yet.
+            <div className="flex flex-col gap-3">
+              <h1 className="text-2xl font-semibold">{stream.title}</h1>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="overflow-hidden rounded-full border border-border/60">
+                    {stream.orgImageUrl && isLocalAsset(stream.orgImageUrl) ? (
+                      <Image
+                        src={stream.orgImageUrl}
+                        alt={stream.orgName ?? "Channel"}
+                        width={44}
+                        height={44}
+                        className="size-11 object-cover"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="flex size-11 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                        {initials || "EL"}
+                      </div>
+                    )}
                   </div>
-                )}
+                  <div className="flex flex-col">
+                    <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                      {stream.orgName ?? "EchoLive"}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {viewerCount.toLocaleString()} watching ·{" "}
+                      {averageWatchLabel}
+                    </span>
+                  </div>
+                </div>
+                <PublicShareActions
+                  shareLink={shareLink}
+                  error={tracker.error}
+                />
               </div>
-              <PublicShareActions shareLink={shareLink} error={tracker.error} />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           <Card className="border-border/60 bg-background/80 backdrop-blur">
             <CardContent className="flex h-full flex-col gap-4 px-6 py-6">

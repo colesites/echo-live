@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
+
+import StudioChatPanel from "@/components/studio/StudioChatPanel";
 import { Alert } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
 import AudioMixerPanel from "@/components/video-studio/AudioMixerPanel";
@@ -90,13 +92,14 @@ export default function VideoStudio({ stream }: VideoStudioProps) {
             createError={scenesState.error}
           />
           <StudioControlsClient stream={stream} />
+          <AudioMixerPanel
+            channels={studioState.mixerState}
+            onVolumeChange={studioState.updateVolume}
+            onToggleMute={studioState.toggleMute}
+            onToggleSolo={studioState.toggleSolo}
+          />
         </div>
-        <AudioMixerPanel
-          channels={studioState.mixerState}
-          onVolumeChange={studioState.updateVolume}
-          onToggleMute={studioState.toggleMute}
-          onToggleSolo={studioState.toggleSolo}
-        />
+        <StudioChatPanel />
       </div>
     </div>
   );

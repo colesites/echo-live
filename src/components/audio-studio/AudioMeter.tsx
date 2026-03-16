@@ -27,7 +27,7 @@ export default function AudioMeter({
             key={`${label}-${segment}`}
             className={cn(
               "h-2 flex-1 rounded-full",
-              segment <= level ? "bg-emerald-400/80" : "bg-muted/70",
+              segment <= level ? "bg-primary/80" : "bg-muted/50",
             )}
           />
         ))}

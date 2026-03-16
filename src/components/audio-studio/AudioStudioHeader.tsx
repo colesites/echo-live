@@ -1,31 +1,30 @@
+"use client";
+
 import { CircleDot, Link as LinkIcon, Radio } from "lucide-react";
 
+import PublicShareActions from "@/components/public/PublicShareActions";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useAbsoluteUrl } from "@/hooks/useAbsoluteUrl";
 
 export type AudioStudioHeaderProps = {
   publicId: string;
   streamTitle: string;
   isLive: boolean;
-  isUpdating: boolean;
-  isConnecting: boolean;
   error: string | null;
-  onToggleLive: () => void;
 };
 
 export default function AudioStudioHeader({
   publicId,
   streamTitle,
   isLive,
-  isUpdating,
-  isConnecting,
   error,
-  onToggleLive,
 }: AudioStudioHeaderProps) {
   const statusLabel = isLive ? "Live" : "Offline";
   const statusStyle = isLive
-    ? "bg-emerald-500/15 text-emerald-200"
+    ? "bg-primary/20 text-primary"
     : "bg-muted text-muted-foreground";
+  const publicHref = `/a/${publicId}`;
+  const publicLink = useAbsoluteUrl(publicHref);
 
   return (
     <div className="flex flex-col gap-4 rounded-3xl border border-border/60 bg-card/80 p-6 shadow-sm">
@@ -48,23 +47,14 @@ export default function AudioStudioHeader({
             </p>
           </div>
         </div>
-        <Button
-          onClick={onToggleLive}
-          className="min-w-32"
-          disabled={isUpdating || isConnecting}
-        >
-          {isUpdating
-            ? "Updating…"
-            : isConnecting
-              ? "Connecting…"
-              : isLive
-                ? "Stop"
-                : "Go Live"}
-        </Button>
+        <Badge variant="secondary">Audio Studio</Badge>
       </div>
-      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-        <LinkIcon className="size-3" />
-        Public link: /a/{publicId}
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
+        <span className="flex items-center gap-2">
+          <LinkIcon className="size-3" />
+          {publicLink}
+        </span>
+        <PublicShareActions shareLink={publicLink} />
       </div>
       {error ? <p className="text-xs text-destructive">{error}</p> : null}
     </div>

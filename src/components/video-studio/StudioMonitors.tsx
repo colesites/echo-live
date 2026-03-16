@@ -1,5 +1,8 @@
-import { PlayCircle, Tv } from "lucide-react";
+"use client";
 
+import { Link as LinkIcon, PlayCircle, Tv } from "lucide-react";
+
+import PublicShareActions from "@/components/public/PublicShareActions";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { StreamStatus } from "@/constants/stream.constants";
@@ -7,6 +10,7 @@ import {
   STREAM_STATUS,
   STREAM_STATUS_LABELS,
 } from "@/constants/stream.constants";
+import { useAbsoluteUrl } from "@/hooks/useAbsoluteUrl";
 import type { Scene } from "@/types/scene.types";
 import { formatSceneSummary } from "@/utils/scene.utils";
 
@@ -29,6 +33,8 @@ export default function StudioMonitors({
 }: StudioMonitorsProps) {
   const programScene = scenes.find((scene) => scene.id === programSceneId);
   const previewScene = scenes.find((scene) => scene.id === previewSceneId);
+  const publicHref = `/v/${publicId}`;
+  const publicLink = useAbsoluteUrl(publicHref);
   const statusClass =
     status === STREAM_STATUS.LIVE
       ? "bg-emerald-500/20 text-emerald-200"
@@ -41,13 +47,17 @@ export default function StudioMonitors({
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-semibold">{streamTitle}</h1>
-          <p className="text-sm text-muted-foreground">Public ID: {publicId}</p>
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
+            <LinkIcon className="size-3" />
+            {publicLink}
+          </p>
         </div>
         <Badge className={statusClass}>
           <PlayCircle className="size-3" />
           {STREAM_STATUS_LABELS[status]}
         </Badge>
       </div>
+      <PublicShareActions shareLink={publicLink} />
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="border-border/60 bg-background/70">
           <CardHeader>

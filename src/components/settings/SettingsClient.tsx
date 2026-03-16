@@ -71,26 +71,28 @@ export default function SettingsClient({
 
   if (!streamsState.data?.length) {
     return (
-      <Card className="border-border/60 bg-background/80 backdrop-blur">
-        <CardContent className="flex flex-col gap-4 px-6 py-8">
-          <div className="flex items-center gap-2 text-primary">
-            <Settings2 className="size-5" />
-            <p className="text-sm font-semibold uppercase tracking-wide">
-              Settings
+      <div className="flex min-h-[calc(100vh-220px)] items-center justify-center">
+        <Card className="w-full max-w-2xl border-border/60 bg-background/80 backdrop-blur">
+          <CardContent className="flex flex-col gap-4 px-6 py-8">
+            <div className="flex items-center gap-2 text-primary">
+              <Settings2 className="size-5" />
+              <p className="text-sm font-semibold uppercase tracking-wide">
+                Settings
+              </p>
+            </div>
+            <p className="text-lg font-semibold">
+              Create a stream to manage destinations.
             </p>
-          </div>
-          <p className="text-lg font-semibold">
-            Create a stream to manage destinations.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Once you have a stream, you can configure RTMP destinations and
-            multistream outputs here.
-          </p>
-          <Button asChild className="w-fit">
-            <Link href="/dashboard">Go to Dashboard</Link>
-          </Button>
-        </CardContent>
-      </Card>
+            <p className="text-sm text-muted-foreground">
+              Once you have a stream, you can configure RTMP destinations and
+              multistream outputs here.
+            </p>
+            <Button asChild className="w-fit">
+              <Link href="/dashboard">Go to Dashboard</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 

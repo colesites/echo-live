@@ -44,3 +44,20 @@ export const upsertCurrentUser = mutation({
     }
   },
 });
+
+export const updateUserLogo = mutation({
+  args: {
+    logo: v.string(),
+  },
+  handler: async (ctx, args) => {
+    try {
+      const { user } = await requireUser(ctx);
+      await ctx.db.patch(user._id, {
+        logo: args.logo,
+      });
+      return user._id;
+    } catch (error) {
+      throw error instanceof Error ? error : new Error(AUTH_ERROR_MESSAGE);
+    }
+  },
+});

@@ -17,9 +17,15 @@ import { formatShortDateTime } from "@/utils/format.utils";
 
 export type StreamCardProps = {
   stream: Stream;
+  isDeleting?: boolean;
+  onDelete?: (streamId: string) => void;
 };
 
-export default function StreamCard({ stream }: StreamCardProps) {
+export default function StreamCard({
+  stream,
+  isDeleting = false,
+  onDelete,
+}: StreamCardProps) {
   const publicHref =
     stream.type === STREAM_MODE.AUDIO
       ? `/a/${stream.publicId}`
@@ -56,6 +62,13 @@ export default function StreamCard({ stream }: StreamCardProps) {
             <Link href={`/settings?streamId=${stream.id}`}>Destinations</Link>
           </Button>
           <PublicShareActions shareLink={shareLink} />
+          <Button
+            variant="destructive"
+            onClick={() => onDelete?.(stream.id)}
+            disabled={isDeleting}
+          >
+            Delete
+          </Button>
         </div>
       </CardContent>
     </Card>

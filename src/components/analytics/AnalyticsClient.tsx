@@ -57,23 +57,25 @@ export default function AnalyticsClient() {
 
   if (!streamsState.data?.length) {
     return (
-      <Card className="border-border/60 bg-background/80 backdrop-blur">
-        <CardContent className="flex flex-col gap-4 px-6 py-8">
-          <div className="flex items-center gap-2 text-primary">
-            <BarChart3 className="size-5" />
-            <p className="text-sm font-semibold uppercase tracking-wide">
-              Analytics
+      <div className="flex min-h-[calc(100vh-220px)] items-center justify-center">
+        <Card className="w-full max-w-2xl border-border/60 bg-background/80 backdrop-blur">
+          <CardContent className="flex flex-col gap-4 px-6 py-8">
+            <div className="flex items-center gap-2 text-primary">
+              <BarChart3 className="size-5" />
+              <p className="text-sm font-semibold uppercase tracking-wide">
+                Analytics
+              </p>
+            </div>
+            <p className="text-lg font-semibold">No streams yet to analyze.</p>
+            <p className="text-sm text-muted-foreground">
+              Start a stream to unlock viewer analytics and country insights.
             </p>
-          </div>
-          <p className="text-lg font-semibold">No streams yet to analyze.</p>
-          <p className="text-sm text-muted-foreground">
-            Start a stream to unlock viewer analytics and country insights.
-          </p>
-          <Button asChild className="w-fit">
-            <Link href="/dashboard">Create a Stream</Link>
-          </Button>
-        </CardContent>
-      </Card>
+            <Button asChild className="w-fit">
+              <Link href="/dashboard">Create a Stream</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 

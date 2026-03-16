@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(106,90,205,0.18),_transparent_55%),radial-gradient(circle_at_top_right,_rgba(245,184,65,0.18),_transparent_50%)]">
+    <div className="min-h-screen bg-background">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-16">
         <div className="flex flex-col gap-6">
           <Badge className="w-fit bg-primary/10 text-primary">
@@ -28,9 +28,6 @@ export default function Home() {
               <Link href="/dashboard">
                 Open Dashboard <ArrowRight />
               </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link href="/dashboard">Start a Stream</Link>
             </Button>
           </div>
         </div>

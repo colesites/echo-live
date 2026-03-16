@@ -14,9 +14,10 @@ export const publicStreamSchema = z.object({
   ]),
   hlsUrl: z.string().nullable().optional(),
   audioUrl: z.string().nullable().optional(),
+  imageUrl: z.string().nullable().optional(),
   createdAt: z.number(),
   scheduledFor: z.number().nullable().optional(),
   liveStartedAt: z.number().nullable().optional(),
-  churchName: z.string().nullable(),
-  churchLogo: z.string().nullable(),
+  orgName: z.string().nullable(),
+  orgImageUrl: z.string().nullable(),
 });

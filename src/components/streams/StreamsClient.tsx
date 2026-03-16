@@ -1,20 +1,29 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import CreateStreamForm from "@/components/dashboard/CreateStreamForm";
+import ConfirmDialog from "@/components/shared/ConfirmDialog";
 import RecordingList from "@/components/streams/RecordingList";
 import StreamCard from "@/components/streams/StreamCard";
 import { Alert } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { STREAM_MODE } from "@/constants/stream.constants";
+import { useDeleteRecording } from "@/hooks/useDeleteRecording";
+import { useDeleteStream } from "@/hooks/useDeleteStream";
 import { useRecordings } from "@/hooks/useRecordings";
 import { useStreams } from "@/hooks/useStreams";
 
 export default function StreamsClient() {
   const streamsState = useStreams();
   const recordingsState = useRecordings();
+  const deleteStreamState = useDeleteStream();
+  const deleteRecordingState = useDeleteRecording();
+  const [pendingStreamId, setPendingStreamId] = useState<string | null>(null);
+  const [pendingRecordingId, setPendingRecordingId] = useState<string | null>(
+    null,
+  );
   const streams = streamsState.data ?? [];
   const recordings = recordingsState.data ?? [];
   const streamById = useMemo(
@@ -64,14 +73,75 @@ export default function StreamsClient() {
     };
   });
 
+  const handleStreamDelete = (streamId: string) => {
+    setPendingStreamId(streamId);
+  };
+
+  const handleRecordingDelete = (recordingId: string) => {
+    setPendingRecordingId(recordingId);
+  };
+
+  const confirmStreamDelete = async () => {
+    if (!pendingStreamId) {
+      return;
+    }
+    const success = await deleteStreamState.deleteStream(pendingStreamId);
+    if (success) {
+      setPendingStreamId(null);
+    }
+  };
+
+  const confirmRecordingDelete = async () => {
+    if (!pendingRecordingId) {
+      return;
+    }
+    const success =
+      await deleteRecordingState.deleteRecording(pendingRecordingId);
+    if (success) {
+      setPendingRecordingId(null);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6">
+      <ConfirmDialog
+        open={Boolean(pendingStreamId)}
+        title="Delete stream?"
+        description="This stream and its recordings will be removed."
+        isConfirming={deleteStreamState.isDeleting}
+        onConfirm={confirmStreamDelete}
+        onClose={() => setPendingStreamId(null)}
+      />
+      <ConfirmDialog
+        open={Boolean(pendingRecordingId)}
+        title="Delete recording?"
+        description="This recording will be removed permanently."
+        isConfirming={deleteRecordingState.isDeleting}
+        onConfirm={confirmRecordingDelete}
+        onClose={() => setPendingRecordingId(null)}
+      />
+      {deleteStreamState.error || deleteRecordingState.error ? (
+        <Alert className="border-border/60 bg-background/80">
+          {deleteStreamState.error ??
+            deleteRecordingState.error ??
+            "Unable to delete item."}
+        </Alert>
+      ) : null}
       <div className="grid gap-4 lg:grid-cols-2">
         {streams.map((stream) => (
-          <StreamCard key={stream.id} stream={stream} />
+          <StreamCard
+            key={stream.id}
+            stream={stream}
+            isDeleting={deleteStreamState.isDeleting}
+            onDelete={handleStreamDelete}
+          />
         ))}
       </div>
-      <RecordingList items={recordingItems} />
+      <RecordingList
+        items={recordingItems}
+        isDeleting={deleteRecordingState.isDeleting}
+        onDelete={handleRecordingDelete}
+      />
     </div>
   );
 }

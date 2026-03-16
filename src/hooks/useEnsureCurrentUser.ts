@@ -2,7 +2,7 @@
 
 import { useUser } from "@clerk/nextjs";
 import { api } from "@convex/_generated/api";
-import { useMutation } from "convex/react";
+import { useConvexAuth, useMutation } from "convex/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AUTH_SYNC_ERROR_MESSAGE } from "@/constants/user.constants";
 import { authUserSchema } from "@/lib/schemas/auth-user.schema";
@@ -20,6 +20,7 @@ const INITIAL_STATE: UserSyncState = {
 
 export function useEnsureCurrentUser() {
   const { isLoaded, isSignedIn, user } = useUser();
+  const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth();
   const upsertUser = useMutation(api.users.upsertCurrentUser);
   const hasSyncedRef = useRef(false);
   const [state, setState] = useState<UserSyncState>(INITIAL_STATE);
@@ -39,12 +40,13 @@ export function useEnsureCurrentUser() {
   }, [user]);
 
   useEffect(() => {
-    if (!isLoaded) {
+    if (!isLoaded || isAuthLoading) {
       return;
     }
 
-    if (!isSignedIn || !user) {
-      setState({ isReady: true, error: null });
+    if (!isSignedIn || !user || !isAuthenticated) {
+      hasSyncedRef.current = false;
+      setState({ isReady: false, error: null });
       return;
     }
 
@@ -69,7 +71,15 @@ export function useEnsureCurrentUser() {
     };
 
     void syncUser();
-  }, [isLoaded, isSignedIn, profile, upsertUser, user]);
+  }, [
+    isLoaded,
+    isAuthLoading,
+    isAuthenticated,
+    isSignedIn,
+    profile,
+    upsertUser,
+    user,
+  ]);
 
   return state;
 }

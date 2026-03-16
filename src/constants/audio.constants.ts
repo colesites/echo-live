@@ -48,3 +48,26 @@ export const MICROPHONE_ACCESS_ERROR_MESSAGE =
   "Unable to access the microphone.";
 
 export const LIVE_AUDIO_SEEK_FALLBACK_WINDOW_SECONDS = 60;
+
+export const AUDIO_EQ_PRESETS = [
+  {
+    id: "flat",
+    label: "Flat",
+    gains: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  },
+  {
+    id: "warm",
+    label: "Warmth",
+    gains: [2, 2, 1, 0, -1, -1, 0, 1, 2, 2],
+  },
+  {
+    id: "vocal",
+    label: "Vocal",
+    gains: [-2, -1, 0, 1, 2, 2, 1, 0, -1, -2],
+  },
+  {
+    id: "clarity",
+    label: "Clarity",
+    gains: [-3, -2, -1, 0, 1, 2, 3, 3, 2, 1],
+  },
+] as const;

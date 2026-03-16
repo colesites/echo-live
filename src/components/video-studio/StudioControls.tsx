@@ -78,7 +78,7 @@ export default function StudioControls({
             disabled={!canStop || isUpdating}
           >
             <CircleStop />
-            {isUpdating && canStop ? "Stopping…" : "Stop"}
+            {isUpdating && canStop ? "Stopping…" : "End Stream"}
           </Button>
         </div>
         <div className="flex flex-wrap gap-2">

@@ -1,5 +1,8 @@
 "use client";
 
+import { useAuth } from "@clerk/nextjs";
+import { useConvexAuth } from "convex/react";
+
 import DashboardOverview from "@/components/dashboard/DashboardOverview";
 import { Alert } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
@@ -8,10 +11,15 @@ import { useDashboardSnapshot } from "@/hooks/useDashboardSnapshot";
 import { useEnsureCurrentUser } from "@/hooks/useEnsureCurrentUser";
 
 export default function DashboardClient() {
+  const { isSignedIn, isLoaded } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth();
   const { isReady, error } = useEnsureCurrentUser();
-  const { data, isLoading, hasError } = useDashboardSnapshot(isReady && !error);
+  const canQuery = Boolean(
+    isLoaded && isSignedIn && isAuthenticated && isReady && !error,
+  );
+  const { data, isLoading, hasError } = useDashboardSnapshot(canQuery);
 
-  if (!isReady) {
+  if (!isReady || isAuthLoading || !isAuthenticated) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center rounded-3xl border border-border/60 bg-background/70">
         <Spinner className="size-6 text-primary" />

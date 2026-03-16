@@ -43,7 +43,7 @@ export function useStreamStatus(streamId: string, status: StreamStatus) {
 
   return {
     isLive: status === STREAM_STATUS.LIVE,
-    canGoLive: status !== STREAM_STATUS.LIVE,
+    canGoLive: status === STREAM_STATUS.SCHEDULED,
     canStop: status === STREAM_STATUS.LIVE,
     isUpdating,
     error,

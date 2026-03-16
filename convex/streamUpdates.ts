@@ -32,3 +32,29 @@ export const updateStreamSchedule = mutation({
     return stream._id;
   },
 });
+
+export const updateStreamDetails = mutation({
+  args: {
+    streamId: v.id("streams"),
+    title: v.optional(v.string()),
+    imageUrl: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const { stream } = await requireStreamOwner(ctx, args.streamId);
+    const updates: Partial<typeof stream> = {};
+
+    if (args.title !== undefined) {
+      updates.title = args.title;
+    }
+
+    if (args.imageUrl !== undefined) {
+      updates.imageUrl = args.imageUrl;
+    }
+
+    if (Object.keys(updates).length > 0) {
+      await ctx.db.patch(stream._id, updates);
+    }
+
+    return stream._id;
+  },
+});

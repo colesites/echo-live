@@ -10,6 +10,10 @@ export const createStream = mutation({
     title: v.string(),
     type: v.union(v.literal(STREAM_TYPES.AUDIO), v.literal(STREAM_TYPES.VIDEO)),
     scheduledFor: v.optional(v.number()),
+    imageUrl: v.optional(v.string()),
+    orgId: v.optional(v.string()),
+    orgName: v.optional(v.string()),
+    orgImageUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const { user } = await requireUser(ctx);
@@ -20,8 +24,12 @@ export const createStream = mutation({
       type: args.type,
       status: STREAM_STATUSES.SCHEDULED,
       ownerId: user._id,
+      orgId: args.orgId,
+      orgName: args.orgName,
+      orgImageUrl: args.orgImageUrl,
       rtmpKey: buildRtmpKey(),
       scheduledFor: args.scheduledFor,
+      imageUrl: args.imageUrl,
       createdAt: Date.now(),
     });
 
@@ -70,6 +78,15 @@ export const updateStreamStatus = mutation({
   },
   handler: async (ctx, args) => {
     const { stream } = await requireStreamOwner(ctx, args.streamId);
+    if (stream.status === STREAM_STATUSES.ENDED) {
+      throw new Error("Stream has ended and cannot go live again.");
+    }
+    if (
+      stream.status === STREAM_STATUSES.SCHEDULED &&
+      args.status === STREAM_STATUSES.ENDED
+    ) {
+      throw new Error("You must go live before ending the stream.");
+    }
     const now = Date.now();
     const updates: Partial<typeof stream> = {
       status: args.status,

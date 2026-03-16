@@ -61,3 +61,18 @@ export const listRecordingsByOwner = query({
       .sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
   },
 });
+
+export const deleteRecording = mutation({
+  args: {
+    recordingId: v.id("recordings"),
+  },
+  handler: async (ctx, args) => {
+    const recording = await ctx.db.get(args.recordingId);
+    if (!recording) {
+      throw new Error("Recording not found.");
+    }
+    await requireStreamOwner(ctx, recording.streamId);
+    await ctx.db.delete(args.recordingId);
+    return args.recordingId;
+  },
+});

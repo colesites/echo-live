@@ -14,12 +14,10 @@ export const getPublicStreamDetails = query({
       return null;
     }
 
-    const owner = await ctx.db.get(stream.ownerId);
-
     return {
       stream,
-      owner: owner
-        ? { churchName: owner.churchName, logo: owner.logo ?? null }
+      org: stream.orgName
+        ? { name: stream.orgName, imageUrl: stream.orgImageUrl ?? null }
         : null,
     };
   },

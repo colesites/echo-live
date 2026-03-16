@@ -10,6 +10,10 @@ import { createStreamSchema } from "@/lib/schemas/stream-form.schema";
 export type CreateStreamPayload = {
   title: string;
   type: StreamMode;
+  imageUrl?: string | null;
+  orgId?: string | null;
+  orgName?: string | null;
+  orgImageUrl?: string | null;
 };
 
 export function useCreateStream() {
@@ -23,22 +27,26 @@ export function useCreateStream() {
       setIsSubmitting(true);
       try {
         const parsed = createStreamSchema.parse(payload);
-        await mutation({
+        const streamId = await mutation({
           title: parsed.title,
           type: parsed.type,
+          imageUrl: parsed.imageUrl ?? undefined,
+          orgId: parsed.orgId ?? undefined,
+          orgName: parsed.orgName ?? undefined,
+          orgImageUrl: parsed.orgImageUrl ?? undefined,
         });
-        return true;
+        return streamId;
       } catch (caught) {
         if (caught instanceof z.ZodError) {
           setError(caught.errors[0]?.message ?? "Invalid input.");
-          return false;
+          return null;
         }
         if (caught instanceof Error) {
           setError(caught.message);
-          return false;
+          return null;
         }
         setError("Unable to create stream.");
-        return false;
+        return null;
       } finally {
         setIsSubmitting(false);
       }
