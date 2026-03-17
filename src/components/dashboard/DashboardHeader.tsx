@@ -1,15 +1,21 @@
-import Link from "next/link";
-
 import CreateStreamForm from "@/components/dashboard/CreateStreamForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function DashboardHeader() {
   return (
-    <div className="flex flex-col gap-6 rounded-[28px] border border-border/70 bg-gradient-to-br from-background via-background to-muted/50 p-6 shadow-sm backdrop-blur">
+    <div className="flex flex-col gap-6 rounded-[28px] border border-border/70 bg-card/70 p-6 shadow-[0_24px_60px_-45px_rgba(0,0,0,0.9)]">
       <div className="flex flex-wrap items-center justify-between gap-6">
         <div className="flex flex-col gap-3">
-          <Badge className="w-fit border border-primary/20 bg-primary/10 text-primary">
+          <Badge className="w-fit border border-primary/30 bg-primary/10 text-primary">
             Control Room
           </Badge>
           <h1 className="text-2xl font-semibold tracking-tight">
@@ -20,12 +26,20 @@ export default function DashboardHeader() {
             audiences, and review recordings in one place.
           </p>
         </div>
-        <Button asChild variant="secondary">
-          <Link href="/studio">Open Studio</Link>
-        </Button>
-      </div>
-      <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
-        <CreateStreamForm />
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="default">Create Stream</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[620px]">
+            <DialogHeader>
+              <DialogTitle>Create a stream</DialogTitle>
+              <DialogDescription>
+                Set a title, pick the type, and add an optional image.
+              </DialogDescription>
+            </DialogHeader>
+            <CreateStreamForm />
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
