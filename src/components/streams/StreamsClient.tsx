@@ -127,21 +127,28 @@ export default function StreamsClient() {
             "Unable to delete item."}
         </Alert>
       ) : null}
-      <div className="grid gap-4 lg:grid-cols-2">
-        {streams.map((stream) => (
-          <StreamCard
-            key={stream.id}
-            stream={stream}
-            isDeleting={deleteStreamState.isDeleting}
-            onDelete={handleStreamDelete}
-          />
-        ))}
+      <div className="grid items-start gap-6 lg:grid-cols-2">
+        <Card className="border-border/60 bg-background/80 backdrop-blur">
+          <CardHeader>
+            <CardTitle className="text-base">Streams</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3">
+            {streams.map((stream) => (
+              <StreamCard
+                key={stream.id}
+                stream={stream}
+                isDeleting={deleteStreamState.isDeleting}
+                onDelete={handleStreamDelete}
+              />
+            ))}
+          </CardContent>
+        </Card>
+        <RecordingList
+          items={recordingItems}
+          isDeleting={deleteRecordingState.isDeleting}
+          onDelete={handleRecordingDelete}
+        />
       </div>
-      <RecordingList
-        items={recordingItems}
-        isDeleting={deleteRecordingState.isDeleting}
-        onDelete={handleRecordingDelete}
-      />
     </div>
   );
 }

@@ -21,7 +21,13 @@ import { createStreamSchema } from "@/lib/schemas/stream-form.schema";
 
 const DEFAULT_TITLE = "";
 
-export default function CreateStreamForm() {
+export type CreateStreamFormProps = {
+  onSuccess?: (streamId: string) => void;
+};
+
+export default function CreateStreamForm({
+  onSuccess,
+}: CreateStreamFormProps) {
   const { createStream, error, isSubmitting } = useCreateStream();
   const imagePicker = useImagePicker(null);
   const router = useRouter();
@@ -46,6 +52,7 @@ export default function CreateStreamForm() {
     if (streamId) {
       setTitle(DEFAULT_TITLE);
       imagePicker.reset();
+      onSuccess?.(streamId);
       router.push(`/studio/${streamId}`);
     }
   };
@@ -80,6 +87,8 @@ export default function CreateStreamForm() {
         accept={imagePicker.accept}
         error={imagePicker.error}
         onFileChange={imagePicker.handleFile}
+        previewShape={type === STREAM_MODE.VIDEO ? "landscape" : "square"}
+        previewVariant={type === STREAM_MODE.VIDEO ? "wide" : "compact"}
       />
       <div className="flex flex-wrap items-center gap-3">
         <Button onClick={handleSubmit} disabled={isSubmitting}>

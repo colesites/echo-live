@@ -12,6 +12,8 @@ export type ImageUploadFieldProps = {
   error?: string | null;
   onFileChange: (file: File | null | undefined) => void;
   className?: string;
+  previewShape?: "square" | "landscape";
+  previewVariant?: "compact" | "wide";
 };
 
 export default function ImageUploadField({
@@ -23,7 +25,19 @@ export default function ImageUploadField({
   error,
   onFileChange,
   className,
+  previewShape = "square",
+  previewVariant = "compact",
 }: ImageUploadFieldProps) {
+  const previewClassName =
+    previewVariant === "wide"
+      ? "aspect-video w-full max-w-[360px] rounded-2xl"
+      : previewShape === "landscape"
+        ? "h-14 w-24 rounded-lg"
+        : "size-14 rounded-xl";
+  const labelLayoutClassName =
+    previewVariant === "wide"
+      ? "flex flex-col items-start gap-3"
+      : "flex items-center gap-4";
   return (
     <div className={cn("flex flex-col gap-3", className)}>
       <Input
@@ -41,19 +55,27 @@ export default function ImageUploadField({
       </div>
       <label
         htmlFor={inputId}
-        className="group flex cursor-pointer items-center gap-4 rounded-2xl border border-border/60 bg-background/60 px-4 py-3 transition hover:border-primary/40 hover:bg-background/80"
+        className={cn(
+          "group cursor-pointer rounded-2xl border border-border/60 bg-background/60 px-4 py-3 transition hover:border-primary/40 hover:bg-background/80",
+          labelLayoutClassName,
+        )}
       >
         {previewUrl ? (
           <Image
             src={previewUrl}
             alt={label}
-            width={56}
-            height={56}
+            width={previewVariant === "wide" ? 640 : previewShape === "landscape" ? 96 : 56}
+            height={previewVariant === "wide" ? 360 : 56}
             unoptimized
-            className="size-14 rounded-xl object-cover"
+            className={cn(previewClassName, "object-cover")}
           />
         ) : (
-          <div className="flex size-14 items-center justify-center rounded-xl border border-dashed border-border/70 bg-background/70 text-xs text-muted-foreground transition group-hover:border-primary/50 group-hover:text-primary">
+          <div
+            className={cn(
+              "flex items-center justify-center border border-dashed border-border/70 bg-background/70 text-xs text-muted-foreground transition group-hover:border-primary/50 group-hover:text-primary",
+              previewClassName,
+            )}
+          >
             No image
           </div>
         )}
